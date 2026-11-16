@@ -1,0 +1,19 @@
+name: thirdspace
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - geopandas
+  - osmnx
+  - pandas
+  - openpyxl
+  - matplotlib
+  - folium
+  - mapclassify
+  - scikit-learn
+  - libpysal
+  - esda
+  - spreg
+  - pandana
+  - ipykernel
+  - jupyter

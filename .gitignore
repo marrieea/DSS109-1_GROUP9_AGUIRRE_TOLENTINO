@@ -1,0 +1,42 @@
+# --- project data and outputs (README section 12: never commit data/) ---
+data/raw/
+data/interim/
+data/processed/
+outputs/
+
+# --- large or raw geodata, wherever they end up (docs/ web map uses .geojson, which stays tracked) ---
+*.zip
+*.pbf
+*.osm
+*.gdb/
+data/**/*.gpkg
+data/**/*.shp
+data/**/*.shx
+data/**/*.dbf
+data/**/*.prj
+data/**/*.cpg
+data/**/*.pkl
+
+# --- caches and logs (OSMnx writes ./cache in whichever folder the notebook runs from) ---
+cache/
+notebooks/cache/
+*.log
+*.tmp
+
+# --- python / jupyter ---
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# --- editor, OS and Office temp files ---
+.vscode/
+.env
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
+.~lock.*
