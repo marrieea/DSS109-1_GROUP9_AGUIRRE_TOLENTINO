@@ -188,7 +188,6 @@ Run the pipeline sequentially starting from 04_walking_network_origins (or run 0
 
 **Environment:** after adding a package, update `environment.yml` in the same commit.
 
-## 13. License
 
 ## 13. License
 
