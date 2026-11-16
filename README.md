@@ -25,11 +25,11 @@ The unit of analysis is the barangay. The four cities were chosen purposively fo
 
 | Dataset | Source | Obtained | Notes |
 |---|---|---|---|
-| 2020 Census of Population and Housing, total population by barangay | Philippine Statistics Authority (PSA) | 31 Oct 2026 | `2020-census-total-popn-brgy_adm4_new-pcode.xlsx`. URL: [add] |
-| Barangay boundaries (admin level 4) | OCHA Humanitarian Data Exchange (HDX), "Philippines – Subnational Administrative Boundaries" (PSA and NAMRIA) | 13 Nov 2026 | Layer `phl_admin4`, attribute `version` = v03. Publication date: [add] |
+| 2020 Census of Population and Housing, total population by barangay | Philippine Statistics Authority (PSA) | 31 Oct 2026 | `2020-census-total-popn-brgy_adm4_new-pcode.xlsx`. URL: https://data.humdata.org/dataset/186f5609-e970-4165-86a0-a87a770532e2/resource/dd6fb33a-a91b-450c-a0f8-0b760a75458e/download/2020-census-total-popn-brgy_adm4_new-pcode.xlsx |
+| Barangay boundaries (admin level 4) | OCHA Humanitarian Data Exchange (HDX), "Philippines – Subnational Administrative Boundaries" (PSA and NAMRIA) | 13 Nov 2026 | Layer `phl_admin4`, attribute `version` = v03. Publication date: 28 May 2026|
 | Third-space features | OpenStreetMap contributors, via Overpass API (overpass-api.de) and OSMnx 2.1.2 | 16 Nov 2026, 13:41 to 14:20 UTC (21:41 to 22:20 PHT). Live query, not date-pinned | Twelve cached pieces (city × tag key) in `data/raw/osm/` |
 | Street network | OpenStreetMap contributors, via Overpass API and OSMnx | Not yet downloaded (notebook 04) | |
-| Spot-check reference | Google Maps (manual lookups only, nothing scraped) | [add] | Planned, see section 8 |
+| Spot-check reference | Google Maps (manual lookups only, nothing scraped) | Pending (Planned for future Notebook) | Planned, see section 8 |
 
 © OpenStreetMap contributors, available under the Open Database License (ODbL).
 
@@ -71,11 +71,11 @@ DSS109-1_GROUP9_AGUIRRE_TOLENTINO/
 - **D4. Makati/Taguig:** no adjustment needed. The boundary file and the census agree: Makati has 33 barangays, including the ten EMBO barangays, and Taguig has 28 (Taguig is outside the study area).
 - **D5. Coordinate system:** EPSG:32651 (UTM zone 51N) for all areas and distances.
 - **D6. OSM download:** one live snapshot (not date-pinned) from overpass-api.de on 16 Nov 2026, 13:41 to 14:20 UTC, using OSMnx 2.1.2. Each city outline was buffered 50 m and simplified (30 m tolerance) to avoid HTTP 413 errors, then queried in three pieces by tag key (amenity, leisure, place) with retries. Two alternative servers timed out in testing. 4,986 unique features were downloaded, and 4,844 fall inside the study barangays.
-- **D7. Walking thresholds:** 1.2 km (15-minute walk) as the main threshold and 800 m as the alternative, based on Tolentino and Sigua (2022).
+- **D7. Walking thresholds:** 850 m to 872.5 meters (85th percentile walking distance) as the main threshold and 680 m (75th percentile) as the alternative, based on Tolentino and Sigua (2022). 
 
 ## 7. Third-space definition
 
-Third places follow Oldenburg (1999). Candidate OSM types were audited, and four groups were defined:
+Third places follow Oldenburg (1999, 2nd ed.; original work published 1989). Candidate OSM types were audited, and four groups were defined:
 
 | Group | OSM rule | Count (Makati / Manila / Pasig / QC) |
 |---|---|---|
@@ -88,7 +88,7 @@ Scenario-only types: barangay halls (`amenity=townhall`), places of worship, mar
 
 **Evidence behind the rules (from notebook 03):**
 - Libraries total 63 (Makati 3, Pasig 4) and plazas (`place=square`) 26, too few to stand alone, so they were merged into larger groups.
-- 88% of pitches and 96% of parks carry no `access` tag, so untagged features are assumed public. Explicit restrictions removed: 11 parks and 44 pitches.
+- 88% of pitches and 96% of parks carry no `access` tag, so untagged features are assumed public. 11 parks and 44 pitches carry restricted access tags.
 - Pitch sports: basketball 444, tennis 167, multi 51, soccer 29, badminton 23, volleyball 11. Tennis courts are mostly private clubs and subdivisions.
 - Mapped park polygons are small: median 1,081 m², 147 under 200 m² and 309 under 1,000 m².
 - Barangay halls: 261 tagged `barangay` and 58 `village` (to verify whether "village" means barangay), about a quarter of study barangays, too sparse as a core type.
@@ -97,64 +97,22 @@ Scenario-only types: barangay halls (`amenity=townhall`), places of worship, mar
 - Cafés are 49% of the core set (1,289 of 2,625) and 60% of Makati's.
 - Community centres carry no `access` tag, so none could be screened.
 - Named share of parks is 37 to 38% in Manila and Makati and 52 to 53% in Pasig and Quezon City.
-- Barangay hall counts (about [exact] per city) are used as a completeness benchmark.
-- Minimum-area sensitivity (200, 500, 1,000 m²): 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
+- Barangay hall counts (Makati: 15 of 33 mapped; Manila: 112 of 897; Pasig: 25 of 30; Quezon City: 109 of 142) are used as a completeness benchmark.
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
+| Mun_City | barangay | city | district | village |
+|---|---|---|---|---|
+| City of Makati | 15 | 2 | 1 | 11 |
+| City of Manila | 112 | 2 | 0 | 34 |
+| City of Pasig | 25 | 1 | 0 | 10 |
+| Quezon City | 109 | 1 | 0 | 3 |
 
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>cafe</th>
-      <th>open_space</th>
-      <th>public_court</th>
-      <th>community_learning</th>
-    </tr>
-    <tr>
-      <th>min_area_m2</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>200</th>
-      <td>1289</td>
-      <td>560</td>
-      <td>507</td>
-      <td>269</td>
-    </tr>
-    <tr>
-      <th>500</th>
-      <td>1289</td>
-      <td>467</td>
-      <td>507</td>
-      <td>269</td>
-    </tr>
-    <tr>
-      <th>1000</th>
-      <td>1289</td>
-      <td>390</td>
-      <td>507</td>
-      <td>269</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+- Minimum-area sensitivity (only open space changes):
+
+| Minimum park/plaza area | Open space | Total core |
+|---|---|---|
+| 200 m² (main) | 560 | 2,625 |
+| 500 m² | 467 | 2,532 |
+| 1,000 m² | 390 | 2,455 |
 
 ## 8. Open decisions
 
@@ -166,7 +124,7 @@ Scenario-only types: barangay halls (`amenity=townhall`), places of worship, mar
 | O4 | Walkability indicators | Choose after checking sidewalk tag coverage |
 | O5 | Manila's very small barangays | Robustness check with larger grouped units |
 | O6 | Scenario types | Test barangay halls, worship, markets and malls one at a time |
-| O7 | Validation design | Precision: 5 features per group per city (80 lookups). Completeness: 2 barangays per city |
+| O7 | Validation design |Precision: 5 features per group per city (80 lookups). Completeness: 2 barangays per city, about 10 of the 23 zero-count Quezon City barangays, and barangay halls as a benchmark.|
 | O8 | Cafés in the index | Report main results with and without cafés |
 | O9 | Park quality | Test named parks only as a scenario |
 
@@ -194,11 +152,29 @@ Scenario-only types: barangay halls (`amenity=townhall`), places of worship, mar
 - Public courts may be under-mapped in Manila (103 features for 897 barangays).
 - Community centres could not be screened for access.
 
-## 11. Setup and how to run
+## 11. Setup and reproducibility
 
-1. Create the environment: `conda env create -f environment.yml`, then `conda activate thirdspace`.
-2. Download the datasets in section 3 into `data/raw/` as described in `src/config.py`.
-3. Run the notebooks in numerical order.
+1. **Environment Setup:** Create and activate the conda environment:
+   ```bash
+   conda env create -f environment.yml
+   conda activate thirdspace
+2. **Directory Structure & Data Placement:** Because data/ is excluded from Git, create the necessary local folders manually if they don't exist:
+    ```bash
+    mkdir -p data/raw/osm data/interim data/processed outputs validation docs
+3. **Place Raw Data Files:** Ensure the datasets are placed in the correct directories:
+
+Census Data: Place the Excel file at data/raw/2020-census-total-popn-brgy_adm4_new-pcode.xlsx.
+
+Boundary Files: Place the shapefile package so that level 4 resides at data/raw/phl_admin_boundaries.shp/phl_admin4.shp.
+
+OSM Snapshot Cache: Place the twelve .pkl files (osm_city_of_*_*.pkl) inside data/raw/osm/.
+
+4. **Execution:** Run the pipeline based on your cached data:
+
+If the twelve .pkl files are present in data/raw/osm/, skip notebook 03 to avoid triggering a fresh 40-minute Overpass API live query.
+
+Run the pipeline sequentially starting from 04_walking_network_origins (or run 03_osm_third_space_audit only if you need to generate a brand-new snapshot from scratch).
+
 
 ## 12. Conventions
 
@@ -214,4 +190,6 @@ Scenario-only types: barangay halls (`amenity=townhall`), places of worship, mar
 
 ## 13. License
 
-Code: [add]. Data: see the licenses of the original sources.
+## 13. License
+
+Code: Licensed under the [MIT License](LICENSE). Data: See the licenses of the original sources.
