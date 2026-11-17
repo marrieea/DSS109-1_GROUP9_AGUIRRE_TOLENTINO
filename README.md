@@ -26,7 +26,7 @@ The unit of analysis is the barangay. The four cities were chosen purposively fo
 | Dataset | Source | Obtained | Notes |
 |---|---|---|---|
 | 2020 Census of Population and Housing, total population by barangay | Philippine Statistics Authority (PSA) | 31 Oct 2026 | `2020-census-total-popn-brgy_adm4_new-pcode.xlsx`. URL: https://data.humdata.org/dataset/186f5609-e970-4165-86a0-a87a770532e2/resource/dd6fb33a-a91b-450c-a0f8-0b760a75458e/download/2020-census-total-popn-brgy_adm4_new-pcode.xlsx |
-| Barangay boundaries (admin level 4) | OCHA Humanitarian Data Exchange (HDX), "Philippines – Subnational Administrative Boundaries" (PSA and NAMRIA) | 13 Nov 2026 | Layer `phl_admin4`, attribute `version` = v03. Publication date: 28 May 2026|
+| Barangay boundaries (admin level 4) | OCHA Humanitarian Data Exchange (HDX), "Philippines – Subnational Administrative Boundaries" (PSA and NAMRIA) | 13 Nov 2026 | Layer `phl_admin4`, attribute `version` = v03. Publication date: 9 February 2018|
 | Third-space features | OpenStreetMap contributors, via Overpass API (overpass-api.de) and OSMnx 2.1.2 | 16 Nov 2026, 13:41 to 14:20 UTC (21:41 to 22:20 PHT). Live query, not date-pinned | Twelve cached pieces (city × tag key) in `data/raw/osm/` |
 | Street network | OpenStreetMap contributors, via Overpass API and OSMnx | Not yet downloaded (notebook 04) | |
 | Spot-check reference | Google Maps (manual lookups only, nothing scraped) | Pending (Planned for future Notebook) | Planned, see section 8 |
@@ -71,7 +71,7 @@ DSS109-1_GROUP9_AGUIRRE_TOLENTINO/
 - **D4. Makati/Taguig:** no adjustment needed. The boundary file and the census agree: Makati has 33 barangays, including the ten EMBO barangays, and Taguig has 28 (Taguig is outside the study area).
 - **D5. Coordinate system:** EPSG:32651 (UTM zone 51N) for all areas and distances.
 - **D6. OSM download:** one live snapshot (not date-pinned) from overpass-api.de on 16 Nov 2026, 13:41 to 14:20 UTC, using OSMnx 2.1.2. Each city outline was buffered 50 m and simplified (30 m tolerance) to avoid HTTP 413 errors, then queried in three pieces by tag key (amenity, leisure, place) with retries. Two alternative servers timed out in testing. 4,986 unique features were downloaded, and 4,844 fall inside the study barangays.
-- **D7. Walking thresholds:** 850 m to 872.5 meters (85th percentile walking distance) as the main threshold and 680 m (75th percentile) as the alternative, based on Tolentino and Sigua (2022). 
+- **D7. Walking thresholds:** 1,200 m as the main threshold, approximating a 15-minute walk at about 80 m/min (an assumed speed; Tolentino and Sigua’s 70.62 m/min would give about 1,059 m), in line with the 15-minute service areas of Mañago et al. (2025), who used age-specific speeds. 800 m as the alternative, which lies between the 85th-percentile walking distances for social and recreation trips (746.3 m) and for all trips (872.5 m) reported by Tolentino and Sigua (2022). Both thresholds are tested as sensitivity checks.
 
 ## 7. Third-space definition
 
@@ -154,26 +154,17 @@ Scenario-only types: barangay halls (`amenity=townhall`), places of worship, mar
 
 ## 11. Setup and reproducibility
 
-1. **Environment Setup:** Create and activate the conda environment:
+1. **Environment:**
    ```bash
    conda env create -f environment.yml
    conda activate thirdspace
-2. **Directory Structure & Data Placement:** Because data/ is excluded from Git, create the necessary local folders manually if they don't exist:
-    ```bash
-    mkdir -p data/raw/osm data/interim data/processed outputs validation docs
-3. **Place Raw Data Files:** Ensure the datasets are placed in the correct directories:
-
-Census Data: Place the Excel file at data/raw/2020-census-total-popn-brgy_adm4_new-pcode.xlsx.
-
-Boundary Files: Place the shapefile package so that level 4 resides at data/raw/phl_admin_boundaries.shp/phl_admin4.shp.
-
-OSM Snapshot Cache: Place the twelve .pkl files (osm_city_of_*_*.pkl) inside data/raw/osm/.
-
-4. **Execution:** Run the pipeline based on your cached data:
-
-If the twelve .pkl files are present in data/raw/osm/, skip notebook 03 to avoid triggering a fresh 40-minute Overpass API live query.
-
-Run the pipeline sequentially starting from 04_walking_network_origins (or run 03_osm_third_space_audit only if you need to generate a brand-new snapshot from scratch).
+   ```
+2. **Folders** (`data/` is not tracked by Git):
+   ```bash
+   mkdir -p data/raw/osm data/interim data/processed outputs validation docs
+   ```
+3. **Raw data:** census Excel file at `data/raw/2020-census-total-popn-brgy_adm4_new-pcode.xlsx`; boundary shapefile at `data/raw/phl_admin_boundaries.shp/phl_admin4.shp`; the twelve `osm_city_of_*_*.pkl` cache files in `data/raw/osm/`.
+4. **Run:** if the twelve cache files are present, skip notebook 03 (a fresh download takes about 40 minutes and creates a new snapshot) and continue from `04_walking_network_origins`.
 
 
 ## 12. Conventions
